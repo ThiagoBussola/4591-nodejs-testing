@@ -32,5 +32,5 @@ test("Deve gerar o número correto de livros", async () => {
     `Deveria gerar ${numberOfBooks} livros`
   );
 
-  //await cleanupFile(testFilePath);
+  await cleanupFile(testFilePath);
 });

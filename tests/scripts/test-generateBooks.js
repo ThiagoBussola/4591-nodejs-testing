@@ -1,7 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert";
 import fs from "fs/promises";
-import { appendFileSync } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { generateBooksToNDJSON } from "../../scripts/generateBooks.js";

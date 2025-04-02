@@ -108,4 +108,48 @@ describe("Book Controller", () => {
       expect(response.body.message).toBe("Book not found");
     });
   });
+
+  describe("PUT /books/:id", () => {
+    it("Deve atualizar um livro existente", async () => {
+      const bookToUpdate = await BookModel.findOne({ ISBN: mockBook.ISBN });
+      const updatedData = { title: "Novo Título" };
+
+      const response = await request(testServer)
+        .put(`/books/${bookToUpdate._id}`)
+        .send(updatedData)
+        .expect(200);
+
+      expect(response.body.title).toBe(updatedData.title);
+    });
+
+    it("Deve retornar 404 se o livro não for encontrado para atualização", async () => {
+      const response = await request(testServer)
+        .put("/books/67ed738320dffdc37c2abc0a")
+        .send({ title: "Novo Título" })
+        .expect(404);
+
+      expect(response.body.message).toBe("Book not found");
+    });
+  });
+
+  describe("DELETE /books/:id", () => {
+    it("Deve deletar um livro existente", async () => {
+      const bookToDelete = await BookModel.findOne({ ISBN: mockBook.ISBN });
+
+      await request(testServer)
+        .delete(`/books/${bookToDelete._id}`)
+        .expect(204);
+
+      const deletedBook = await BookModel.findById(bookToDelete._id);
+      expect(deletedBook).toBeNull();
+    });
+
+    it("Deve retornar 404 se o livro não for encontrado para remoção", async () => {
+      const response = await request(testServer)
+        .delete("/books/67ed738320dffdc37c2abc0a")
+        .expect(404);
+
+      expect(response.body.message).toBe("Book not found");
+    });
+  });
 });

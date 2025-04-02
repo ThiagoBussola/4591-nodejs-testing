@@ -31,8 +31,8 @@ describe("Auth Controller", () => {
   describe("POST /auth/register", () => {
     it("Deve registrar um novo usuário", async () => {
       const newUser = {
-        username: `novoUsuario-${Date.now()}`,
-        email: `novousuario-${Date.now()}@teste.com`,
+        username: `novoUsuario`,
+        email: `novousuario@teste.com`,
         password: "newpass123",
       };
 
@@ -57,16 +57,18 @@ describe("Auth Controller", () => {
   });
 
   it("Deve logar com credenciais validas", async () => {
+    const findedUser = await User.findOne({ email: "novousuario@teste.com" });
+
     const response = await request(testServer)
       .post("/auth/login")
       .send({
-        email: testUserData.email,
-        password: testUserData.password,
+        email: findedUser.email,
+        password: "newpass123",
       })
       .expect(200);
 
     expect(response.body.token).toBeDefined();
-    expect(response.body.userId).toBe(testUser._id.toString());
+    expect(response.body.userId).toBe(findedUser._id.toString());
   });
 
   it("Deve falhar ao logar com credenciais invalidas", async () => {

@@ -62,4 +62,50 @@ describe("Book Controller", () => {
       expect(response.body.message).toBe("Book with this ISBN already exists");
     });
   });
+
+  describe("GET /books", () => {
+    it("Deve retornar todos os livros", async () => {
+      const response = await request(testServer).get("/books").expect(200);
+
+      const dbCount = await BookModel.countDocuments();
+
+      expect(response.body.length).toBe(dbCount);
+    });
+  });
+
+  describe("GET /books/:title", () => {
+    it("Deve retornar um livro pelo título", async () => {
+      const response = await request(testServer)
+        .get(`/books/${mockBook.title}`)
+        .expect(200);
+
+      expect(response.body[0].title).toBe(mockBook.title);
+    });
+
+    it("Deve retornar 404 se o livro não for encontrado pela busca por titulo", async () => {
+      const response = await request(testServer)
+        .get("/books/Livro-Inexistente")
+        .expect(404);
+
+      expect(response.body.message).toBe("Book not found");
+    });
+  });
+
+  describe("GET /books/isbn/:isbn", () => {
+    it("Deve retornar um livro pelo ISBN", async () => {
+      const response = await request(testServer)
+        .get(`/books/isbn/${mockBook.ISBN}`)
+        .expect(200);
+
+      expect(response.body.title).toBe(mockBook.title);
+    });
+
+    it("Deve retornar 404 se o livro não for encontrado pela busca por ISBN", async () => {
+      const response = await request(testServer)
+        .get("/books/isbn/ISBN-Inexistente")
+        .expect(404);
+
+      expect(response.body.message).toBe("Book not found");
+    });
+  });
 });

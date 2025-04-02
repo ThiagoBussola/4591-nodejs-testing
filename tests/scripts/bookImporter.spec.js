@@ -18,6 +18,8 @@ describe("Book Importer", function () {
   const batchSize = 1000;
   const expectBatches = Math.ceil(mainNumberOfBooks / batchSize);
 
+  let insertManySpy;
+
   before(async () => {
     await mongoose.connect("mongodb://localhost:27017/books_test");
     await mongoose.connection.asPromise();
@@ -31,10 +33,20 @@ describe("Book Importer", function () {
 
   beforeEach(async () => {
     await BookModel.deleteMany();
+    insertManySpy = sinon.spy(BookModel, "insertMany");
   });
 
   afterEach(() => {
+    insertManySpy.restore();
     if (fs.existsSync(smallFilePath)) fs.unlinkSync(smallFilePath);
     if (fs.existsSync(mainFilePath)) fs.unlinkSync(mainFilePath);
+  });
+
+  it("Deve chamar BookModel.inserMany um número correto de vezes", async function () {
+    this.timeout(0);
+    await importBooksFromNDJSON(mainFilePath, batchSize);
+
+    console.log("Chamadas registradas pelo spy", insertManySpy.callCount);
+    expect(insertManySpy.callCount).to.equal(expectBatches);
   });
 });

@@ -9,6 +9,7 @@ export async function importBooksFromNDJSON(filePath, batchSize = 1000) {
   const rl = readline.createInterface({ input: fileStream });
 
   let batch = [];
+  let insertPromises = [];
 
   for await (const line of rl) {
     try {
@@ -16,11 +17,11 @@ export async function importBooksFromNDJSON(filePath, batchSize = 1000) {
       batch.push(book);
 
       if (batch.length >= batchSize) {
-        try {
-          await BookModel.insertMany(batch);
-        } catch (error) {
-          console.error("Erro ao inserir lote de livros:", error);
-        }
+        insertPromises.push(
+          await BookModel.insertMany(batch).catch((error) => {
+            console.error("Erro ao inserir lote de livros:", error);
+          })
+        );
         batch = [];
       }
     } catch (error) {
@@ -29,13 +30,13 @@ export async function importBooksFromNDJSON(filePath, batchSize = 1000) {
   }
 
   if (batch.length > 0) {
-    try {
-      await BookModel.insertMany(batch);
-    } catch (error) {
-      console.error("Erro ao inserir último lote de livros:", error);
-    }
+    insertPromises.push(
+      await BookModel.insertMany(batch).catch((error) => {
+        console.error("Erro ao inserir lote de livros:", error);
+      })
+    );
   }
-
+  await Promise.all(insertPromises);
   rl.close();
   fileStream.destroy();
 }

@@ -1,6 +1,6 @@
 import { authService } from "./auth.service.js";
 import { userService } from "../user/user.service.js";
-import bcrypt from "bcrypt";
+import * as bcrypt from "bcrypt";
 
 export class AuthController {
   async register(req, res) {
@@ -54,7 +54,7 @@ export class AuthController {
 
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        return res.status(401).json({ message: "Invalid credentials" });
+        return res.status(401).json({ message: "Invalid credentials AAAAAA" });
       }
 
       const token = authService.generateToken(user);

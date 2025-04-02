@@ -18,8 +18,11 @@ class App {
   async database() {
     const isTest = process.env.NODE_ENV === "dev";
 
+    console.log(isTest);
+
     const DB_NAME = isTest ? "books_test" : "books";
     const MONGO_URI = `mongodb://localhost:27017/${DB_NAME}`;
+    console.log(MONGO_URI);
     try {
       await mongoose.connect(MONGO_URI);
       console.log("connect database success");

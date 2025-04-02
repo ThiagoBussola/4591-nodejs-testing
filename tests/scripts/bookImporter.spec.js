@@ -22,7 +22,6 @@ describe("Book Importer", function () {
 
   before(async () => {
     await mongoose.connect("mongodb://localhost:27017/books_test");
-    await mongoose.connection.asPromise();
     await generateBooksToNDJSON(mainFilePath, mainNumberOfBooks);
   });
 
@@ -36,7 +35,7 @@ describe("Book Importer", function () {
     insertManySpy = sinon.spy(BookModel, "insertMany");
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     insertManySpy.restore();
     if (fs.existsSync(smallFilePath)) fs.unlinkSync(smallFilePath);
     if (fs.existsSync(mainFilePath)) fs.unlinkSync(mainFilePath);
@@ -48,5 +47,29 @@ describe("Book Importer", function () {
 
     console.log("Chamadas registradas pelo spy", insertManySpy.callCount);
     expect(insertManySpy.callCount).to.equal(expectBatches);
+
+    const booksOnDb = await BookModel.countDocuments();
+    expect(booksOnDb).to.equal(mainNumberOfBooks);
+  });
+
+  describe("Testes com um número menor de livros", async () => {
+    beforeEach(async () => {
+      await generateBooksToNDJSON(smallFilePath, smallNumberOfBooks);
+    });
+
+    it("Deve inserir apenas livros válidos", async () => {
+      const invalidBook = { title: "O Hobbit #22" };
+      fs.appendFileSync(smallFilePath, JSON.stringify(invalidBook) + "\n");
+
+      await importBooksFromNDJSON(smallFilePath, batchSize);
+
+      const booksOnDb = await BookModel.countDocuments();
+      expect(booksOnDb).to.equal(smallNumberOfBooks);
+
+      const invalidBookOnDb = await BookModel.findOne({
+        title: "O Hobbit #22",
+      });
+      expect(invalidBookOnDb).to.be.null;
+    });
   });
 });

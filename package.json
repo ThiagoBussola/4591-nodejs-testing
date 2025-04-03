@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node --env-file=.env ./src/main.js",
     "test:mocha": "mocha --require esm 'tests/**/*.spec.js'",
-    "test:jest": "NODE_ENV=dev APP=dev JWT_SECRET=batataDoce  node --experimental-vm-modules node_modules/jest/bin/jest.js"
+    "test:jest": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "keywords": [],
   "author": "",

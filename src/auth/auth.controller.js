@@ -1,6 +1,7 @@
 import { authService } from "./auth.service.js";
 import { userService } from "../user/user.service.js";
 import * as bcrypt from "bcrypt";
+import { errorMessages } from "../enums/errorMessages.enum.js";
 
 export class AuthController {
   async register(req, res) {
@@ -38,7 +39,9 @@ export class AuthController {
         });
       }
       console.error("Registration error:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      return res
+        .status(500)
+        .json({ message: errorMessages.INTERNAL_SERVER_ERROR });
     }
   }
 
@@ -48,12 +51,16 @@ export class AuthController {
       const user = await userService.findUserByEmail(email);
 
       if (!user) {
-        return res.status(401).json({ message: "Invalid credentials" });
+        return res
+          .status(401)
+          .json({ message: errorMessages.INTERNAL_SERVER_ERROR });
       }
 
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        return res.status(401).json({ message: "Invalid credentials AAAAAA" });
+        return res
+          .status(401)
+          .json({ message: errorMessages.INTERNAL_SERVER_ERROR });
       }
 
       const token = authService.generateToken(user);

@@ -1,4 +1,5 @@
 import { BookService } from "./book.service.js";
+import { errorMessages } from "../enums/errorMessages.enum.js";
 
 class BookController {
   async create(req, res) {
@@ -15,7 +16,9 @@ class BookController {
       const books = await new BookService().find();
       res.status(200).send(books);
     } catch (error) {
-      res.status(500).send({ message: "Internal Server Error", error });
+      res
+        .status(500)
+        .send({ message: errorMessages.INTERNAL_SERVER_ERROR, error });
     }
   }
 
@@ -23,11 +26,13 @@ class BookController {
     try {
       const book = await new BookService().findByTitle(req.params.title);
       if (!book || book.length === 0) {
-        return res.status(404).send({ message: "Book not found" });
+        return res.status(404).send({ message: errorMessages.BOOK_NOT_FOUND });
       }
       res.status(200).send(book);
     } catch (error) {
-      res.status(500).send({ message: "Internal Server Error", error });
+      res
+        .status(500)
+        .send({ message: errorMessages.INTERNAL_SERVER_ERROR, error });
     }
   }
 
@@ -35,11 +40,13 @@ class BookController {
     try {
       const book = await new BookService().findByISBN(req.params.isbn);
       if (!book) {
-        return res.status(404).send({ message: "Book not found" });
+        return res.status(404).send({ message: errorMessages.BOOK_NOT_FOUND });
       }
       res.status(200).send(book);
     } catch (error) {
-      res.status(500).send({ message: "Internal Server Error", error });
+      res
+        .status(500)
+        .send({ message: errorMessages.INTERNAL_SERVER_ERROR, error });
     }
   }
 
@@ -50,7 +57,7 @@ class BookController {
         req.body
       );
       if (!updatedBook) {
-        return res.status(404).send({ message: "Book not found" });
+        return res.status(404).send({ message: errorMessages.BOOK_NOT_FOUND });
       }
       res.status(200).send(updatedBook);
     } catch (error) {
@@ -62,11 +69,13 @@ class BookController {
     try {
       const deletedBook = await new BookService().delete(req.params.id);
       if (!deletedBook) {
-        return res.status(404).send({ message: "Book not found" });
+        return res.status(404).send({ message: errorMessages.BOOK_NOT_FOUND });
       }
       res.status(204).send();
     } catch (error) {
-      res.status(500).send({ message: "Internal Server Error", error });
+      res
+        .status(500)
+        .send({ message: errorMessages.INTERNAL_SERVER_ERROR, error });
     }
   }
 }

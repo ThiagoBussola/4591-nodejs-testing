@@ -2,6 +2,7 @@ import { getTestServer, teardownTestServer } from "../test-setup.js";
 import User from "../../src/user/user.schema.js";
 import request from "supertest";
 import bcrypt from "bcrypt";
+import { errorMessages } from "../../src/enums/errorMessages.enum.js";
 
 describe("Auth Controller", () => {
   let testUser;
@@ -80,6 +81,6 @@ describe("Auth Controller", () => {
       })
       .expect(401);
 
-    expect(response.body.message).toMatch("Invalid credentials");
+    expect(response.body.message).toMatch(errorMessages.INTERNAL_SERVER_ERROR);
   });
 });

@@ -4,6 +4,7 @@ import BookModel from "../../src/books/book.schema.js";
 import { getTestServer, teardownTestServer } from "../test-setup.js";
 import { generateBooksToNDJSON } from "../../scripts/generateBooks.js";
 import { importBooksFromNDJSON } from "../../scripts/populateBooks.js";
+import { errorMessages } from "../../src/enums/errorMessages.enum.js";
 
 const numberOfBooks = 20;
 const filePath = "books-integration.ndjson";
@@ -22,9 +23,6 @@ describe("Book Controller", () => {
     await generateBooksToNDJSON(filePath, numberOfBooks);
 
     await importBooksFromNDJSON(filePath);
-
-    const count = await BookModel.countDocuments();
-    console.log("Livros no banco: ", count);
   });
 
   afterAll(async () => {
@@ -87,7 +85,7 @@ describe("Book Controller", () => {
         .get("/books/Livro-Inexistente")
         .expect(404);
 
-      expect(response.body.message).toBe("Book not found");
+      expect(response.body.message).toBe(errorMessages.BOOK_NOT_FOUND);
     });
   });
 
@@ -105,7 +103,7 @@ describe("Book Controller", () => {
         .get("/books/isbn/ISBN-Inexistente")
         .expect(404);
 
-      expect(response.body.message).toBe("Book not found");
+      expect(response.body.message).toBe(errorMessages.BOOK_NOT_FOUND);
     });
   });
 
@@ -128,7 +126,7 @@ describe("Book Controller", () => {
         .send({ title: "Novo Título" })
         .expect(404);
 
-      expect(response.body.message).toBe("Book not found");
+      expect(response.body.message).toBe(errorMessages.BOOK_NOT_FOUND);
     });
   });
 
@@ -149,7 +147,7 @@ describe("Book Controller", () => {
         .delete("/books/67ed738320dffdc37c2abc0a")
         .expect(404);
 
-      expect(response.body.message).toBe("Book not found");
+      expect(response.body.message).toBe(errorMessages.BOOK_NOT_FOUND);
     });
   });
 });

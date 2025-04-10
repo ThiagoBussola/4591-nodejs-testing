@@ -1,10 +1,11 @@
+import { errorMessages } from "../enums/errorMessages.enum.js";
 import BookModel from "./book.schema.js";
 
 export class BookService {
   async create(book) {
     const existingBook = await BookModel.findOne({ ISBN: book.ISBN });
     if (existingBook) {
-      throw new Error("Book with this ISBN already exists");
+      throw new Error(errorMessages.BOOK_ALREADY_EXISTS);
     }
     return await BookModel.create(book);
   }

@@ -7,7 +7,7 @@ class BookController {
       const book = await new BookService().create(req.body);
       res.status(201).send(book);
     } catch (error) {
-      res.status(400).send({ message: error.message });
+      res.status(400).send({ message: errorMessages.BOOK_ALREADY_EXISTS });
     }
   }
 

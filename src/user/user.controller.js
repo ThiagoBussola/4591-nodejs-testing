@@ -1,3 +1,4 @@
+import { errorMessages } from "../enums/errorMessages.enum.js";
 import { userService } from "./user.service.js";
 
 class UserController {
@@ -6,8 +7,7 @@ class UserController {
       const users = await userService.findAll();
       res.status(200).send(users);
     } catch (error) {
-      console.error("Error in findAll:", error);
-      res.status(500).send({ message: "Failed to retrieve users" });
+      res.status(500).send({ message: errorMessages.FIND_ALL_FAILED });
     }
   }
 
@@ -15,12 +15,11 @@ class UserController {
     try {
       const user = await userService.findById(req.params.id);
       if (!user) {
-        return res.status(404).send({ message: "User not found" });
+        return res.status(404).send({ message: errorMessages.USER_NOT_FOUND });
       }
       res.status(200).send(user);
     } catch (error) {
-      console.error("Error in findById:", error);
-      res.status(500).send({ message: "Failed to retrieve user" });
+      res.status(500).send({ message: errorMessages.FIND_BY_ID_FAILED });
     }
   }
 
@@ -28,12 +27,11 @@ class UserController {
     try {
       const user = await userService.findByEmail(req.params.email);
       if (!user) {
-        return res.status(404).send({ message: "User not found" });
+        return res.status(404).send({ message: errorMessages.USER_NOT_FOUND });
       }
       res.status(200).send(user);
     } catch (error) {
-      console.error("Error in findByEmail:", error);
-      res.status(500).send({ message: "Failed to retrieve user by email" });
+      res.status(500).send({ message: errorMessages.FIND_BY_EMAIL_FAILED });
     }
   }
 
@@ -41,12 +39,11 @@ class UserController {
     try {
       const user = await userService.updateUser(req.params.id, req.body);
       if (!user) {
-        return res.status(404).send({ message: "User not found" });
+        return res.status(404).send({ message: errorMessages.USER_NOT_FOUND });
       }
       res.status(200).send(user);
     } catch (error) {
-      console.error("Error in update:", error);
-      res.status(500).send({ message: "Failed to update user" });
+      res.status(500).send({ message: errorMessages.UPDATE_FAILED });
     }
   }
 
@@ -54,12 +51,11 @@ class UserController {
     try {
       const user = await userService.deleteUser(req.params.id);
       if (!user) {
-        return res.status(404).send({ message: "User not found" });
+        return res.status(404).send({ message: errorMessages.USER_NOT_FOUND });
       }
       res.status(204).send();
     } catch (error) {
-      console.error("Error in delete:", error);
-      res.status(500).send({ message: "Failed to delete user" });
+      res.status(500).send({ message: errorMessages.DELETE_FAILED });
     }
   }
 }

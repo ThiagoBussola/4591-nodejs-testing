@@ -54,7 +54,19 @@ describe("Auth Controller", () => {
         .expect(400);
 
       expect(response.body.message).toBe(errorMessages.USERNAME_ALREADY_EXISTS);
-    }, 10000);
+    });
+
+    it("Deve falhar ao cadastrar com o email duplicado", async () => {
+      const response = await request(testServer)
+        .post("/auth/register")
+        .send({
+          ...testUserData,
+          username: "username diferente",
+        })
+        .expect(400);
+
+      expect(response.body.message).toBe(errorMessages.EMAIL_ALREADY_EXISTS);
+    });
   });
 
   it("Deve logar com credenciais validas", async () => {

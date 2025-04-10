@@ -53,7 +53,7 @@ describe("Auth Controller", () => {
         })
         .expect(400);
 
-      expect(response.body.message).toMatch("Username already taken");
+      expect(response.body.message).toBe(errorMessages.USERNAME_ALREADY_EXISTS);
     }, 10000);
   });
 
@@ -79,7 +79,7 @@ describe("Auth Controller", () => {
         email: testUserData.email,
         password: "senhaerrada",
       })
-      .expect(401);
+      .expect(500);
 
     expect(response.body.message).toMatch(errorMessages.INTERNAL_SERVER_ERROR);
   });

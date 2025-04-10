@@ -1,6 +1,4 @@
 import { authService } from "./auth.service.js";
-import { userService } from "../user/user.service.js";
-import * as bcrypt from "bcrypt";
 import { errorMessages } from "../enums/errorMessages.enum.js";
 
 export class AuthController {
@@ -8,70 +6,26 @@ export class AuthController {
     const { username, email, password } = req.body;
 
     try {
-      const [userByEmail, userByUsername] = await Promise.all([
-        userService.findByEmail(email),
-        userService.findByUsername(username),
-      ]);
-
-      if (userByEmail) {
-        return res.status(400).json({ message: "Email already in use" });
-      }
-      if (userByUsername) {
-        return res.status(400).json({ message: "Username already taken" });
-      }
-
-      const newUser = await userService.createUser({
+      const newUser = await authService.registerUser({
         username,
         email,
         password,
       });
-
-      return res.status(201).json({
-        id: newUser._id,
-        username: newUser.username,
-        email: newUser.email,
-      });
+      return res.status(201).json(newUser);
     } catch (error) {
-      if (error.code === 11000) {
-        const field = Object.keys(error.keyPattern)[0];
-        return res.status(400).json({
-          message: `${field} already exists`,
-        });
-      }
-      console.error("Registration error:", error);
-      return res
-        .status(500)
-        .json({ message: errorMessages.INTERNAL_SERVER_ERROR });
+      return res.status(400).json({ message: error.message });
     }
   }
 
   async login(req, res) {
     try {
       const { email, password } = req.body;
-      const user = await userService.findUserByEmail(email);
-
-      if (!user) {
-        return res
-          .status(401)
-          .json({ message: errorMessages.INTERNAL_SERVER_ERROR });
-      }
-
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-        return res
-          .status(401)
-          .json({ message: errorMessages.INTERNAL_SERVER_ERROR });
-      }
-
-      const token = authService.generateToken(user);
-
-      return res.status(200).json({
-        token,
-        userId: user._id,
-        username: user.username,
-      });
+      const loginResponse = await authService.loginUser({ email, password });
+      return res.status(200).json(loginResponse);
     } catch (error) {
-      return res.status(500).json({ message: "Login failed" });
+      return res
+        .status(500)
+        .json({ message: errorMessages.INTERNAL_SERVER_ERROR });
     }
   }
 }
